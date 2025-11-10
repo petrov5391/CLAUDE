@@ -1,0 +1,17 @@
+{
+  "name": "@ai-browser/coordination",
+  "version": "0.1.0",
+  "description": "Модуль координации и межмодельной коммуникации для AI Browser",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/test-coordination.js"
+  },
+  "keywords": ["coordination", "message-bus", "ai", "communication"],
+  "author": "AI Browser Team",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^5.0.1",
+    "winston": "^3.11.0",
+    "uuid": "^9.0.1"
+  }
+}
