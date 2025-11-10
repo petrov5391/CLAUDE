@@ -177,37 +177,67 @@ ai-browser/
 
 ## 🚀 Быстрый старт
 
+### Автоматический запуск (рекомендуется)
+
+```bash
+cd /home/user/CLAUDE/ai-browser
+./launch.sh
+```
+
+Launcher проверит все зависимости, предложит установить недостающие компоненты и предоставит интерактивное меню для:
+- Запуска Electron приложения
+- Запуска всех тестов (110+ тестов)
+- Запуска интеграционных тестов
+- Запуска демонстраций модулей
+
+**Для полной документации по установке и настройке смотрите [SETUP.md](./SETUP.md)**
+
 ### Требования
 
 - **Node.js** >= 18.0.0
 - **npm** >= 9.0.0
 - **Linux Mint 22.2** (или другая Linux дистрибуция)
 - **Git**
+- **Redis** >= 6.0 (опционально, для персистентности и кэширования)
 
-### Установка
+### Ручная установка
 
 1. **Клонируйте репозиторий** (или используйте существующую директорию):
 
 ```bash
-cd /home/user/CLAUDE/ai-browser/electron-app
+cd /home/user/CLAUDE/ai-browser
 ```
 
-2. **Установите зависимости**:
+2. **Установите зависимости всех модулей**:
 
 ```bash
-npm install
+for dir in electron-app coordination task-queue browser-control tools redis-integration; do
+  (cd $dir && npm install)
+done
 ```
 
-3. **Запустите в режиме разработки**:
+3. **Установите Playwright браузеры**:
 
 ```bash
-npm run dev
+cd browser-control
+npx playwright install chromium
 ```
 
-4. **Соберите для продакшена**:
+4. **Запустите тесты**:
 
 ```bash
-npm run build
+# Все тесты
+./launch.sh  # Выберите опцию 2
+
+# Или отдельный модуль
+cd coordination && npm test
+```
+
+5. **Запустите Electron приложение**:
+
+```bash
+cd electron-app
+npm start
 ```
 
 ## 📖 Использование
@@ -554,8 +584,10 @@ const workflow = await workflowGenerator.createAIChatWorkflow({
 - [x] Генератор документов (PDF, DOCX, MD, HTML) ✅
 - [x] n8n workflow генератор ✅
 - [x] Redis для управления сессиями и кэширования ✅
+- [x] Интеграционные тесты (110+ тестов, все проходят) ✅
+- [x] Launcher скрипт для автоматического запуска ✅
+- [x] Полная документация по установке и настройке (SETUP.md) ✅
 - [ ] UI для настроек и управления API ключами
-- [ ] Интеграционные тесты (Jest + Playwright)
 
 ## 📄 Лицензия
 
