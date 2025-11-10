@@ -1,0 +1,42 @@
+{
+  "name": "ai-browser",
+  "version": "0.1.0",
+  "description": "AI-управляемый браузер на базе Chromium для автоматизации задач",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron . --no-sandbox",
+    "dev": "NODE_ENV=development electron . --no-sandbox",
+    "build": "electron-builder",
+    "rebuild": "electron-rebuild -f -w node-pty",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": ["ai", "browser", "automation", "chromium", "electron"],
+  "author": "AI Browser Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron/rebuild": "^3.6.0",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "electron-store": "^8.1.0",
+    "playwright-core": "^1.41.0",
+    "ws": "^8.16.0",
+    "redis": "^4.6.12",
+    "winston": "^3.11.0",
+    "axios": "^1.6.5",
+    "uuid": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.aibrowser.app",
+    "productName": "AI Browser",
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Development"
+    }
+  }
+}

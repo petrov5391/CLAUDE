@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+*.AppImage
+*.deb
+*.rpm
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Electron
+electron-app/dist/
+electron-app/out/
+
+# Config (может содержать API ключи)
+config/local.json
+config/production.json
+
+# User data
+userData/
+sessions/
+.cache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
