@@ -84,9 +84,27 @@
   - Кастомные workflows
   - Загрузка в n8n через API
 
+### ✅ Redis Integration Module (v0.6.0)
+
+- **🔐 SessionStore** - хранение browser sessions
+  - Управление cookies и localStorage
+  - Сохранение состояния между перезапусками
+  - Статистика по провайдерам
+- **💾 TaskPersistence** - персистентность TaskQueue
+  - Автосохранение очереди задач
+  - Восстановление после перезапуска
+  - Очистка завершенных задач
+- **🗄️ CacheManager** - кэширование AI ответов
+  - Кэш с TTL
+  - Hit rate статистика
+  - Автоматическая очистка при переполнении
+- **⚡ RedisManager** - управление подключением
+  - Автоматическое переподключение
+  - Pub/Sub для событий
+  - Hash, List, Set операции
+
 ### 🚧 В разработке
 
-- **📡 Redis интеграция** для управления сессиями
 - **🔍 UI для настроек** и управления API ключами
 - **🧪 Интеграционные тесты** (Jest + Playwright)
 
@@ -138,11 +156,20 @@ ai-browser/
 │   │   ├── workflow-generator.js  # Генерация n8n workflows
 │   │   └── index.js
 │   └── package.json
+├── redis-integration/    # ✅ Интеграция с Redis
+│   ├── src/
+│   │   ├── redis-manager.js       # Управление подключением
+│   │   ├── session-store.js       # Хранение сессий
+│   │   ├── task-persistence.js    # Персистентность задач
+│   │   ├── cache-manager.js       # Кэширование ответов
+│   │   └── index.js
+│   └── package.json
 ├── examples/             # Примеры использования
 │   ├── browser-control-integration.js
 │   ├── coordination-demo.js
 │   ├── task-queue-demo.js
-│   └── tools-demo.js
+│   ├── tools-demo.js
+│   └── redis-demo.js
 ├── backend-api/          # Backend координации (TODO)
 ├── n8n-workflows/        # Готовые workflow (TODO)
 └── logs/                 # Логи приложения
@@ -526,7 +553,7 @@ const workflow = await workflowGenerator.createAIChatWorkflow({
 - [x] Генератор изображений (DALL-E, Stable Diffusion) ✅
 - [x] Генератор документов (PDF, DOCX, MD, HTML) ✅
 - [x] n8n workflow генератор ✅
-- [ ] Redis для управления сессиями
+- [x] Redis для управления сессиями и кэширования ✅
 - [ ] UI для настроек и управления API ключами
 - [ ] Интеграционные тесты (Jest + Playwright)
 
@@ -540,12 +567,13 @@ MIT License
 
 ---
 
-**Версия**: 0.5.0
+**Версия**: 0.6.0
 **Дата**: 2025-11-10
 **Статус**: В активной разработке
 
 ### История версий
 
+- **v0.6.0** (2025-11-10) - Redis Integration: SessionStore, TaskPersistence, CacheManager, RedisManager
 - **v0.5.0** (2025-11-10) - Tools Module: генерация изображений, документов и n8n workflows
 - **v0.4.0** (2025-11-10) - Task Queue Module: приоритетная очередь, зависимости, автораспределение
 - **v0.3.0** (2025-11-10) - Coordination Module: MessageBus, Coordinator, SharedState
