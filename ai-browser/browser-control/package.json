@@ -1,0 +1,17 @@
+{
+  "name": "@ai-browser/browser-control",
+  "version": "0.1.0",
+  "description": "Browser automation модуль для AI Browser с Playwright",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/test-browser-control.js"
+  },
+  "keywords": ["playwright", "automation", "browser", "ai"],
+  "author": "AI Browser Team",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.41.0",
+    "winston": "^3.11.0",
+    "uuid": "^9.0.1"
+  }
+}

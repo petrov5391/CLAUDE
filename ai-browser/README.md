@@ -22,9 +22,22 @@
 - **⚙️ Менеджер вкладок**: создание, закрытие, навигация
 - **🤖 Менеджер AI моделей**: привязка моделей к вкладкам
 
+### ✅ Browser Control Module (v0.2.0)
+
+- **🎭 Playwright интеграция** - полная автоматизация web-интерфейсов
+- **🤖 Провайдеры**:
+  - ChatGPT (chat.openai.com) - отправка промптов, получение ответов
+  - Claude (claude.ai) - работа через web-интерфейс
+  - DeepSeek (chat.deepseek.com) - автоматизация coding задач
+- **Возможности**:
+  - Создание браузерных сессий
+  - Управление cookies и авторизацией
+  - Сохранение/восстановление состояния
+  - Множественные сессии одновременно
+  - Headless и GUI режимы
+
 ### 🚧 В разработке
 
-- **🎭 Playwright интеграция** для управления web-based моделями
 - **💬 Межмодельная коммуникация** через message bus
 - **🔄 Очередь задач** с приоритизацией
 - **🎨 Генерация изображений** (DALL-E, Midjourney, Stable Diffusion)
@@ -50,9 +63,19 @@ ai-browser/
 │   ├── public/           # Статические файлы
 │   │   └── index.html    # Dashboard
 │   └── package.json
-├── backend-api/          # Backend сервер координации
-├── browser-control/      # Playwright интеграция
-├── n8n-workflows/        # Готовые workflow
+├── browser-control/      # ✅ Playwright автоматизация
+│   ├── src/
+│   │   ├── browser-controller.js  # Главный контроллер
+│   │   ├── browser-session.js     # Управление сессиями
+│   │   └── providers/             # Провайдеры для web-моделей
+│   │       ├── chatgpt-provider.js
+│   │       ├── claude-provider.js
+│   │       └── deepseek-provider.js
+│   └── package.json
+├── examples/             # Примеры использования
+│   └── browser-control-integration.js
+├── backend-api/          # Backend координации (TODO)
+├── n8n-workflows/        # Готовые workflow (TODO)
 └── logs/                 # Логи приложения
 ```
 
@@ -227,9 +250,60 @@ mkdir -p logs
 chmod 755 logs
 ```
 
+## 🌐 Browser Control - Работа с web-based моделями
+
+### Быстрый старт
+
+```bash
+# Установка зависимостей
+cd browser-control
+npm install
+
+# Установка Playwright браузеров
+npx playwright install chromium
+
+# Запуск примеров
+cd ../examples
+node browser-control-integration.js 4
+```
+
+### Использование
+
+```javascript
+const { BrowserController } = require('./browser-control/src');
+const winston = require('winston');
+
+const logger = winston.createLogger({ /* ... */ });
+const controller = new BrowserController(logger, { headless: false });
+
+// Инициализация
+await controller.initialize();
+
+// Создание сессии для ChatGPT
+const { sessionId, session } = await controller.createSession('chatgpt');
+
+// Отправка промпта
+const response = await session.sendPrompt('Напиши Hello World на Python');
+console.log(response.response);
+
+// Очистка
+await controller.cleanup();
+```
+
+### Интеграция с Electron
+
+Browser Control автоматически интегрируется с AI Model Manager:
+
+1. При привязке web-based модели к вкладке создается браузерная сессия
+2. Промпты отправляются через `sendWebPrompt()` → Browser Control → Provider
+3. Ответы возвращаются обратно в Electron приложение
+
+Подробная документация: `browser-control/README.md`
+
 ## 📝 TODO
 
-- [ ] Интеграция Playwright для web-based моделей
+- [x] Интеграция Playwright для web-based моделей ✅
+- [x] Провайдеры для ChatGPT, Claude, DeepSeek ✅
 - [ ] Система межмодельной коммуникации
 - [ ] Очередь задач с приоритизацией
 - [ ] UI для настроек и управления API ключами

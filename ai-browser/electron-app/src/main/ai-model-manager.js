@@ -4,6 +4,7 @@
  */
 
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 class AIModelManager {
   constructor(logger) {
@@ -11,9 +12,34 @@ class AIModelManager {
     this.models = new Map(); // modelId -> model config
     this.tabModels = new Map(); // tabId -> modelId
     this.sessions = new Map(); // sessionId -> session data
+    this.browserController = null; // Browser Control для web-based моделей
 
     // Инициализация доступных моделей
     this.initializeModels();
+
+    // Инициализация Browser Controller (отложенная)
+    this.initBrowserController();
+  }
+
+  /**
+   * Инициализация Browser Controller
+   */
+  async initBrowserController() {
+    try {
+      // Импортируем Browser Control модуль
+      const browserControlPath = path.join(__dirname, '../../../browser-control/src/index.js');
+      const { BrowserController } = require(browserControlPath);
+
+      this.browserController = new BrowserController(this.logger, {
+        headless: true,
+        userDataDir: path.join(__dirname, '../../../browser-control/user-data')
+      });
+
+      this.logger.info('Browser Controller инициализирован (lazy)');
+    } catch (error) {
+      this.logger.warn('Browser Controller не доступен:', error.message);
+      this.logger.warn('Web-based модели будут недоступны');
+    }
   }
 
   /**
@@ -200,25 +226,54 @@ class AIModelManager {
    * Инициализация web-сессии для браузерных моделей
    */
   async initializeWebSession(tabId, model, config) {
-    this.logger.info(`Инициализация web-сессии для ${model.name} в вкладке ${tabId}`);
+    if (!this.browserController) {
+      throw new Error('Browser Controller не доступен. Установите browser-control модуль.');
+    }
 
-    const sessionId = uuidv4();
+    try {
+      this.logger.info(`Инициализация web-сессии для ${model.name} в вкладке ${tabId}`);
 
-    this.sessions.set(sessionId, {
-      id: sessionId,
-      tabId,
-      modelId: model.id,
-      url: model.url,
-      status: 'initializing',
-      createdAt: Date.now()
-    });
+      // Инициализируем браузер если еще не инициализирован
+      if (!this.browserController.isInitialized) {
+        await this.browserController.initialize();
+      }
 
-    // TODO: Здесь будет логика авторизации через Playwright
-    // Пока просто помечаем сессию как готовую
-    const session = this.sessions.get(sessionId);
-    session.status = 'ready';
+      // Определяем провайдер по ID модели
+      let providerName;
+      if (model.id.includes('chatgpt')) {
+        providerName = 'chatgpt';
+      } else if (model.id.includes('claude')) {
+        providerName = 'claude';
+      } else if (model.id.includes('deepseek')) {
+        providerName = 'deepseek';
+      } else {
+        throw new Error(`Неизвестный web-based провайдер: ${model.id}`);
+      }
 
-    return sessionId;
+      // Создаем сессию через Browser Controller
+      const { sessionId, session } = await this.browserController.createSession(
+        providerName,
+        config.sessionOptions || {}
+      );
+
+      // Сохраняем информацию о сессии
+      this.sessions.set(sessionId, {
+        id: sessionId,
+        tabId,
+        modelId: model.id,
+        provider: providerName,
+        browserSession: session,
+        status: 'ready',
+        createdAt: Date.now()
+      });
+
+      this.logger.info(`✓ Web-сессия ${sessionId} создана для ${model.name}`);
+
+      return sessionId;
+    } catch (error) {
+      this.logger.error(`Ошибка создания web-сессии:`, error);
+      throw error;
+    }
   }
 
   /**
@@ -284,19 +339,47 @@ class AIModelManager {
    * Отправка промпта через web-интерфейс
    */
   async sendWebPrompt(tabId, model, prompt, context) {
-    this.logger.info(`Отправка web-промпта к ${model.name}`);
+    try {
+      this.logger.info(`Отправка web-промпта к ${model.name}`);
 
-    // TODO: Реализовать управление через Playwright
-    // Пока возвращаем заглушку
-    return {
-      type: 'web',
-      content: `[Web Response from ${model.name}]`,
-      metadata: {
-        model: model.id,
-        tabId,
-        timestamp: Date.now()
+      // Находим активную сессию для данной вкладки
+      const assignment = this.tabModels.get(tabId);
+      if (!assignment) {
+        throw new Error(`Для вкладки ${tabId} не назначена модель`);
       }
-    };
+
+      // Ищем сессию
+      let sessionData = null;
+      for (const [sessionId, data] of this.sessions.entries()) {
+        if (data.tabId === tabId && data.modelId === model.id) {
+          sessionData = data;
+          break;
+        }
+      }
+
+      if (!sessionData || !sessionData.browserSession) {
+        throw new Error(`Web-сессия не найдена для вкладки ${tabId}`);
+      }
+
+      // Отправляем промпт через Browser Control
+      const response = await sessionData.browserSession.sendPrompt(prompt, {
+        timeout: context.timeout || 60000
+      });
+
+      return {
+        type: 'web',
+        content: response.response,
+        metadata: {
+          model: model.id,
+          tabId,
+          sessionId: sessionData.id,
+          timestamp: response.timestamp
+        }
+      };
+    } catch (error) {
+      this.logger.error(`Ошибка web-промпта:`, error);
+      throw error;
+    }
   }
 
   /**
@@ -320,8 +403,18 @@ class AIModelManager {
   /**
    * Очистка ресурсов
    */
-  cleanup() {
+  async cleanup() {
     this.logger.info('Очистка AIModelManager: закрытие всех сессий');
+
+    // Закрываем Browser Controller
+    if (this.browserController) {
+      try {
+        await this.browserController.cleanup();
+        this.logger.info('✓ Browser Controller очищен');
+      } catch (error) {
+        this.logger.error('Ошибка очистки Browser Controller:', error);
+      }
+    }
 
     this.sessions.clear();
     this.tabModels.clear();
