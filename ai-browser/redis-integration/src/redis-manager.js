@@ -50,7 +50,7 @@ class RedisManager extends EventEmitter {
    */
   defaultRetryStrategy(times) {
     const delay = Math.min(times * 50, 2000);
-    this.logger.warn(`[RedisManager] Reconnecting... attempt ${times}, delay: ${delay}ms`);
+    this.logger.warn(`[RedisManager] Переподключение... попытка ${times}, задержка: ${delay}ms`);
     return delay;
   }
 
@@ -63,7 +63,7 @@ class RedisManager extends EventEmitter {
     }
 
     this.isConnecting = true;
-    this.logger.info(`[RedisManager] Connecting to Redis at ${this.config.host}:${this.config.port}`);
+    this.logger.info(`[RedisManager] Подключение к Redis на ${this.config.host}:${this.config.port}`);
 
     try {
       // Динамический импорт ioredis
@@ -94,7 +94,7 @@ class RedisManager extends EventEmitter {
       // События
       this.client.on('error', (error) => {
         this.stats.errors++;
-        this.logger.error('[RedisManager] Redis error:', error);
+        this.logger.error('[RedisManager] Ошибка Redis:', error);
         this.emit('error', error);
       });
 
@@ -102,24 +102,24 @@ class RedisManager extends EventEmitter {
         this.isConnected = true;
         this.isConnecting = false;
         this.stats.startTime = Date.now();
-        this.logger.info('[RedisManager] Connected to Redis');
+        this.logger.info('[RedisManager] Подключено к Redis');
         this.emit('connect');
       });
 
       this.client.on('ready', () => {
-        this.logger.info('[RedisManager] Redis ready');
+        this.logger.info('[RedisManager] Redis готов');
         this.emit('ready');
       });
 
       this.client.on('reconnecting', () => {
         this.stats.reconnects++;
-        this.logger.warn('[RedisManager] Reconnecting to Redis');
+        this.logger.warn('[RedisManager] Переподключение к Redis');
         this.emit('reconnecting');
       });
 
       this.client.on('end', () => {
         this.isConnected = false;
-        this.logger.info('[RedisManager] Redis connection closed');
+        this.logger.info('[RedisManager] Соединение с Redis закрыто');
         this.emit('end');
       });
 
@@ -127,11 +127,11 @@ class RedisManager extends EventEmitter {
       this.isConnecting = false;
       this.stats.startTime = Date.now();
 
-      this.logger.info('[RedisManager] Redis connected successfully');
+      this.logger.info('[RedisManager] Redis успешно подключен');
 
     } catch (error) {
       this.isConnecting = false;
-      this.logger.error('[RedisManager] Failed to connect to Redis:', error);
+      this.logger.error('[RedisManager] Ошибка подключения к Redis:', error);
       throw error;
     }
   }
@@ -154,7 +154,7 @@ class RedisManager extends EventEmitter {
       retryStrategy: this.config.retryStrategy
     });
 
-    this.logger.info('[RedisManager] Subscriber created');
+    this.logger.info('[RedisManager] Подписчик создан');
 
     return this.subscriber;
   }
@@ -181,7 +181,7 @@ class RedisManager extends EventEmitter {
       return result;
     } catch (error) {
       this.stats.errors++;
-      this.logger.error(`[RedisManager] Command ${command} failed:`, error);
+      this.logger.error(`[RedisManager] Команда ${command} не выполнена:`, error);
       throw error;
     }
   }
@@ -418,7 +418,7 @@ class RedisManager extends EventEmitter {
       }
     });
 
-    this.logger.info(`[RedisManager] Subscribed to channel: ${channel}`);
+    this.logger.info(`[RedisManager] Подписка на канал: ${channel}`);
   }
 
   /**
@@ -427,7 +427,7 @@ class RedisManager extends EventEmitter {
   async unsubscribe(channel) {
     if (this.subscriber) {
       await this.subscriber.unsubscribe(channel);
-      this.logger.info(`[RedisManager] Unsubscribed from channel: ${channel}`);
+      this.logger.info(`[RedisManager] Отписка от канала: ${channel}`);
     }
   }
 
@@ -435,7 +435,7 @@ class RedisManager extends EventEmitter {
    * FLUSHDB (очистить текущую БД)
    */
   async flushdb() {
-    this.logger.warn('[RedisManager] Flushing database');
+    this.logger.warn('[RedisManager] Очистка базы данных');
     return await this.execute('flushdb');
   }
 
@@ -483,12 +483,12 @@ class RedisManager extends EventEmitter {
   async disconnect() {
     if (this.client) {
       await this.client.quit();
-      this.logger.info('[RedisManager] Disconnected from Redis');
+      this.logger.info('[RedisManager] Отключено от Redis');
     }
 
     if (this.subscriber) {
       await this.subscriber.quit();
-      this.logger.info('[RedisManager] Subscriber disconnected');
+      this.logger.info('[RedisManager] Подписчик отключен');
     }
 
     this.isConnected = false;

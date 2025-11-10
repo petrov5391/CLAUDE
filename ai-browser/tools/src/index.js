@@ -30,7 +30,7 @@ function createToolsSystem(logger, options = {}) {
     n8nApiKey: options.n8nApiKey
   });
 
-  logger.info('[ToolsSystem] All tools initialized');
+  logger.info('[ToolsSystem] Все инструменты инициализированы');
 
   return {
     imageGenerator,

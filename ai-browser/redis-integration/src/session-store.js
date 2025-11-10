@@ -35,7 +35,7 @@ class SessionStore {
     const key = `${this.keyPrefix}${sessionId}`;
     await this.redis.set(key, session, this.defaultTTL);
 
-    this.logger.info(`[SessionStore] Session created: ${sessionId} (${session.provider})`);
+    this.logger.info(`[SessionStore] Сессия создана: ${sessionId} (${session.provider})`);
 
     return sessionId;
   }
@@ -77,7 +77,7 @@ class SessionStore {
     const key = `${this.keyPrefix}${sessionId}`;
     await this.redis.set(key, updated, this.defaultTTL);
 
-    this.logger.info(`[SessionStore] Session updated: ${sessionId}`);
+    this.logger.info(`[SessionStore] Сессия обновлена: ${sessionId}`);
 
     return updated;
   }
@@ -89,7 +89,7 @@ class SessionStore {
     const key = `${this.keyPrefix}${sessionId}`;
     const result = await this.redis.del(key);
 
-    this.logger.info(`[SessionStore] Session deleted: ${sessionId}`);
+    this.logger.info(`[SessionStore] Сессия удалена: ${sessionId}`);
 
     return result > 0;
   }
@@ -216,7 +216,7 @@ class SessionStore {
       cleared++;
     }
 
-    this.logger.info(`[SessionStore] Cleared ${cleared} inactive sessions`);
+    this.logger.info(`[SessionStore] Очищено ${cleared} неактивных сессий`);
 
     return cleared;
   }
@@ -235,7 +235,7 @@ class SessionStore {
       cleared++;
     }
 
-    this.logger.info(`[SessionStore] Cleared ${cleared} old sessions (>${maxAge}ms)`);
+    this.logger.info(`[SessionStore] Очищено ${cleared} старых сессий (>${maxAge}мс)`);
 
     return cleared;
   }
@@ -273,7 +273,7 @@ class SessionStore {
       await this.delete(session.id);
     }
 
-    this.logger.info(`[SessionStore] Cleared all sessions (${all.length})`);
+    this.logger.info(`[SessionStore] Очищены все сессии (${all.length})`);
 
     return all.length;
   }

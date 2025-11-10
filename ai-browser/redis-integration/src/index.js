@@ -20,7 +20,7 @@ function createRedisSystem(logger, options = {}) {
   const taskPersistence = new TaskPersistence(redisManager, logger);
   const cacheManager = new CacheManager(redisManager, logger, options.cache || {});
 
-  logger.info('[RedisSystem] Redis integration system created');
+  logger.info('[RedisSystem] Система интеграции Redis создана');
 
   return {
     redisManager,

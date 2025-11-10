@@ -31,7 +31,7 @@ class TaskPersistence {
       await this.redis.hset(this.tasksKey, task.id, task);
     }
 
-    this.logger.info(`[TaskPersistence] Queue saved: ${state.tasks.length} tasks`);
+    this.logger.info(`[TaskPersistence] Очередь сохранена: ${state.tasks.length} задач`);
 
     return state.tasks.length;
   }
@@ -44,7 +44,7 @@ class TaskPersistence {
     const state = await this.redis.get(this.queueKey);
 
     if (!state) {
-      this.logger.info('[TaskPersistence] No saved queue state found');
+      this.logger.info('[TaskPersistence] Сохраненное состояние очереди не найдено');
       return 0;
     }
 
@@ -52,7 +52,7 @@ class TaskPersistence {
     const tasksData = await this.redis.hgetall(this.tasksKey);
 
     if (!tasksData) {
-      this.logger.info('[TaskPersistence] No saved tasks found');
+      this.logger.info('[TaskPersistence] Сохраненные задачи не найдены');
       return 0;
     }
 
@@ -64,7 +64,7 @@ class TaskPersistence {
       maxQueueSize: state.maxQueueSize
     });
 
-    this.logger.info(`[TaskPersistence] Queue loaded: ${tasks.length} tasks`);
+    this.logger.info(`[TaskPersistence] Очередь загружена: ${tasks.length} задач`);
 
     return tasks.length;
   }
@@ -74,7 +74,7 @@ class TaskPersistence {
    */
   async saveTask(task) {
     await this.redis.hset(this.tasksKey, task.id, task.toJSON());
-    this.logger.debug(`[TaskPersistence] Task saved: ${task.id}`);
+    this.logger.debug(`[TaskPersistence] Задача сохранена: ${task.id}`);
   }
 
   /**
@@ -82,7 +82,7 @@ class TaskPersistence {
    */
   async updateTask(taskId, taskData) {
     await this.redis.hset(this.tasksKey, taskId, taskData);
-    this.logger.debug(`[TaskPersistence] Task updated: ${taskId}`);
+    this.logger.debug(`[TaskPersistence] Задача обновлена: ${taskId}`);
   }
 
   /**
@@ -90,7 +90,7 @@ class TaskPersistence {
    */
   async deleteTask(taskId) {
     await this.redis.hdel(this.tasksKey, taskId);
-    this.logger.debug(`[TaskPersistence] Task deleted: ${taskId}`);
+    this.logger.debug(`[TaskPersistence] Задача удалена: ${taskId}`);
   }
 
   /**
@@ -131,7 +131,7 @@ class TaskPersistence {
       await this.deleteTask(task.id);
     }
 
-    this.logger.info(`[TaskPersistence] Cleared ${completed.length} completed tasks`);
+    this.logger.info(`[TaskPersistence] Очищено ${completed.length} завершенных задач`);
 
     return completed.length;
   }
@@ -148,7 +148,7 @@ class TaskPersistence {
       await this.deleteTask(task.id);
     }
 
-    this.logger.info(`[TaskPersistence] Cleared ${toRemove.length} failed/cancelled tasks`);
+    this.logger.info(`[TaskPersistence] Очищено ${toRemove.length} проваленных/отмененных задач`);
 
     return toRemove.length;
   }
@@ -164,13 +164,13 @@ class TaskPersistence {
     this.autoSaveInterval = setInterval(async () => {
       try {
         await this.saveQueue(taskQueue);
-        this.logger.debug('[TaskPersistence] Auto-save completed');
+        this.logger.debug('[TaskPersistence] Автосохранение завершено');
       } catch (error) {
-        this.logger.error('[TaskPersistence] Auto-save failed:', error);
+        this.logger.error('[TaskPersistence] Ошибка автосохранения:', error);
       }
     }, interval);
 
-    this.logger.info(`[TaskPersistence] Auto-save started (interval: ${interval}ms)`);
+    this.logger.info(`[TaskPersistence] Автосохранение запущено (интервал: ${interval}мс)`);
   }
 
   /**
@@ -180,7 +180,7 @@ class TaskPersistence {
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
       this.autoSaveInterval = null;
-      this.logger.info('[TaskPersistence] Auto-save stopped');
+      this.logger.info('[TaskPersistence] Автосохранение остановлено');
     }
   }
 
@@ -222,7 +222,7 @@ class TaskPersistence {
     await this.redis.del(this.queueKey);
     await this.redis.execute('del', this.tasksKey);
 
-    this.logger.info('[TaskPersistence] All task data cleared');
+    this.logger.info('[TaskPersistence] Все данные задач очищены');
   }
 }
 

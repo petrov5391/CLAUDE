@@ -37,9 +37,9 @@ class WorkflowGenerator {
     try {
       await fs.mkdir(this.outputDir, { recursive: true });
       await fs.mkdir(this.templatesDir, { recursive: true });
-      this.logger.info(`[WorkflowGenerator] Output directory: ${this.outputDir}`);
+      this.logger.info(`[WorkflowGenerator] Директория вывода: ${this.outputDir}`);
     } catch (error) {
-      this.logger.error(`[WorkflowGenerator] Failed to create directories:`, error);
+      this.logger.error(`[WorkflowGenerator] Ошибка создания директорий:`, error);
     }
   }
 
@@ -125,7 +125,7 @@ class WorkflowGenerator {
   async create(config) {
     const workflowId = uuidv4();
 
-    this.logger.info(`[WorkflowGenerator] Creating workflow: ${config.name}`);
+    this.logger.info(`[WorkflowGenerator] Создание workflow: ${config.name}`);
 
     this.stats.total++;
     const type = config.type || 'custom';
@@ -144,7 +144,7 @@ class WorkflowGenerator {
       this.stats.success++;
       this.stats.byType[type].success++;
 
-      this.logger.info(`[WorkflowGenerator] Workflow created: ${filename}`);
+      this.logger.info(`[WorkflowGenerator] Workflow создан: ${filename}`);
 
       return {
         success: true,
@@ -160,7 +160,7 @@ class WorkflowGenerator {
       this.stats.failed++;
       this.stats.byType[type].failed++;
 
-      this.logger.error(`[WorkflowGenerator] Failed to create workflow:`, error);
+      this.logger.error(`[WorkflowGenerator] Ошибка создания workflow:`, error);
 
       return {
         success: false,
@@ -418,7 +418,7 @@ class WorkflowGenerator {
         }
       );
 
-      this.logger.info(`[WorkflowGenerator] Workflow uploaded to n8n: ${response.data.id}`);
+      this.logger.info(`[WorkflowGenerator] Workflow загружен в n8n: ${response.data.id}`);
 
       return {
         success: true,
@@ -427,7 +427,7 @@ class WorkflowGenerator {
       };
 
     } catch (error) {
-      this.logger.error('[WorkflowGenerator] Failed to upload workflow:', error.message);
+      this.logger.error('[WorkflowGenerator] Ошибка загрузки workflow:', error.message);
 
       return {
         success: false,
@@ -478,7 +478,7 @@ class WorkflowGenerator {
       return details.sort((a, b) => b.created - a.created);
 
     } catch (error) {
-      this.logger.error('[WorkflowGenerator] Failed to list workflows:', error);
+      this.logger.error('[WorkflowGenerator] Ошибка получения списка workflows:', error);
       return [];
     }
   }
@@ -492,7 +492,7 @@ class WorkflowGenerator {
 
     await fs.writeFile(filepath, JSON.stringify(workflow, null, 2), 'utf-8');
 
-    this.logger.info(`[WorkflowGenerator] Template saved: ${filename}`);
+    this.logger.info(`[WorkflowGenerator] Шаблон сохранен: ${filename}`);
 
     return { filename, filepath };
   }

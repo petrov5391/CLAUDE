@@ -49,9 +49,9 @@ class ImageGenerator {
   async ensureOutputDir() {
     try {
       await fs.mkdir(this.outputDir, { recursive: true });
-      this.logger.info(`[ImageGenerator] Output directory: ${this.outputDir}`);
+      this.logger.info(`[ImageGenerator] Директория вывода: ${this.outputDir}`);
     } catch (error) {
-      this.logger.error(`[ImageGenerator] Failed to create output directory:`, error);
+      this.logger.error(`[ImageGenerator] Ошибка создания директории:`, error);
     }
   }
 
@@ -62,7 +62,7 @@ class ImageGenerator {
     const provider = options.provider || this.defaultProvider;
     const taskId = uuidv4();
 
-    this.logger.info(`[ImageGenerator] Generating image with ${provider}: "${prompt}"`);
+    this.logger.info(`[ImageGenerator] Генерация изображения через ${provider}: "${prompt}"`);
 
     this.stats.total++;
     if (!this.stats.byProvider[provider]) {
@@ -84,13 +84,13 @@ class ImageGenerator {
           result = await this.generateWithMidjourney(prompt, options);
           break;
         default:
-          throw new Error(`Unknown provider: ${provider}`);
+          throw new Error(`Неизвестный провайдер: ${provider}`);
       }
 
       this.stats.success++;
       this.stats.byProvider[provider].success++;
 
-      this.logger.info(`[ImageGenerator] Image generated successfully: ${result.filename}`);
+      this.logger.info(`[ImageGenerator] Изображение успешно сгенерировано: ${result.filename}`);
 
       return {
         success: true,
@@ -107,7 +107,7 @@ class ImageGenerator {
       this.stats.failed++;
       this.stats.byProvider[provider].failed++;
 
-      this.logger.error(`[ImageGenerator] Failed to generate image:`, error);
+      this.logger.error(`[ImageGenerator] Ошибка генерации изображения:`, error);
 
       return {
         success: false,
@@ -124,7 +124,7 @@ class ImageGenerator {
    */
   async generateWithDallE(prompt, options = {}) {
     if (!this.config.dalle.apiKey) {
-      throw new Error('OpenAI API key is not configured');
+      throw new Error('OpenAI API ключ не настроен');
     }
 
     const requestData = {
@@ -260,7 +260,7 @@ class ImageGenerator {
    */
   async createVariation(imagePath, options = {}) {
     if (!this.config.dalle.apiKey) {
-      throw new Error('OpenAI API key is not configured');
+      throw new Error('OpenAI API ключ не настроен');
     }
 
     const FormData = require('form-data');
@@ -354,7 +354,7 @@ class ImageGenerator {
       return details.sort((a, b) => b.created - a.created);
 
     } catch (error) {
-      this.logger.error('[ImageGenerator] Failed to list images:', error);
+      this.logger.error('[ImageGenerator] Ошибка получения списка изображений:', error);
       return [];
     }
   }

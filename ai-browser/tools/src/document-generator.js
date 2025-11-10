@@ -32,9 +32,9 @@ class DocumentGenerator {
     try {
       await fs.mkdir(this.outputDir, { recursive: true });
       await fs.mkdir(this.templatesDir, { recursive: true });
-      this.logger.info(`[DocumentGenerator] Output directory: ${this.outputDir}`);
+      this.logger.info(`[DocumentGenerator] Директория вывода: ${this.outputDir}`);
     } catch (error) {
-      this.logger.error(`[DocumentGenerator] Failed to create directories:`, error);
+      this.logger.error(`[DocumentGenerator] Ошибка создания директорий:`, error);
     }
   }
 
@@ -45,7 +45,7 @@ class DocumentGenerator {
     const format = options.format || 'pdf';
     const taskId = uuidv4();
 
-    this.logger.info(`[DocumentGenerator] Generating ${format.toUpperCase()} document`);
+    this.logger.info(`[DocumentGenerator] Генерация документа ${format.toUpperCase()}`);
 
     this.stats.total++;
     if (!this.stats.byFormat[format]) {
@@ -77,7 +77,7 @@ class DocumentGenerator {
       this.stats.success++;
       this.stats.byFormat[format].success++;
 
-      this.logger.info(`[DocumentGenerator] Document generated: ${result.filename}`);
+      this.logger.info(`[DocumentGenerator] Документ сгенерирован: ${result.filename}`);
 
       return {
         success: true,
@@ -93,7 +93,7 @@ class DocumentGenerator {
       this.stats.failed++;
       this.stats.byFormat[format].failed++;
 
-      this.logger.error(`[DocumentGenerator] Failed to generate document:`, error);
+      this.logger.error(`[DocumentGenerator] Ошибка генерации документа:`, error);
 
       return {
         success: false,
@@ -488,7 +488,7 @@ class DocumentGenerator {
       return details.sort((a, b) => b.created - a.created);
 
     } catch (error) {
-      this.logger.error('[DocumentGenerator] Failed to list documents:', error);
+      this.logger.error('[DocumentGenerator] Ошибка получения списка документов:', error);
       return [];
     }
   }

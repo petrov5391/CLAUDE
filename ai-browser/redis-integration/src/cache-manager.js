@@ -50,7 +50,7 @@ class CacheManager {
 
     if (cached) {
       this.stats.hits++;
-      this.logger.debug(`[CacheManager] Cache HIT: ${key.substring(0, 50)}...`);
+      this.logger.debug(`[CacheManager] Кэш ПОПАДАНИЕ: ${key.substring(0, 50)}...`);
 
       return {
         ...cached,
@@ -60,7 +60,7 @@ class CacheManager {
     }
 
     this.stats.misses++;
-    this.logger.debug(`[CacheManager] Cache MISS: ${key.substring(0, 50)}...`);
+    this.logger.debug(`[CacheManager] Кэш ПРОМАХ: ${key.substring(0, 50)}...`);
 
     return null;
   }
@@ -89,7 +89,7 @@ class CacheManager {
     await this.redis.set(key, cacheEntry, ttl);
 
     this.stats.sets++;
-    this.logger.debug(`[CacheManager] Cached response for ${model} (TTL: ${ttl}s)`);
+    this.logger.debug(`[CacheManager] Ответ закэширован для ${model} (TTL: ${ttl}с)`);
 
     return true;
   }
@@ -103,7 +103,7 @@ class CacheManager {
 
     if (result) {
       this.stats.deletes++;
-      this.logger.debug(`[CacheManager] Cache entry deleted: ${key}`);
+      this.logger.debug(`[CacheManager] Запись кэша удалена: ${key}`);
     }
 
     return result > 0;
@@ -140,7 +140,7 @@ class CacheManager {
     const size = await this.getCacheSize();
 
     if (size >= this.maxCacheSize) {
-      this.logger.warn(`[CacheManager] Cache size limit reached (${size}/${this.maxCacheSize})`);
+      this.logger.warn(`[CacheManager] Достигнут лимит размера кэша (${size}/${this.maxCacheSize})`);
 
       // Удаляем 10% старейших записей
       const toRemove = Math.floor(this.maxCacheSize * 0.1);
@@ -180,7 +180,7 @@ class CacheManager {
       removed++;
     }
 
-    this.logger.info(`[CacheManager] Evicted ${removed} oldest cache entries`);
+    this.logger.info(`[CacheManager] Удалено ${removed} старейших записей кэша`);
 
     return removed;
   }
@@ -199,7 +199,7 @@ class CacheManager {
       await this.redis.del(fullKey);
     }
 
-    this.logger.info(`[CacheManager] Cache cleared (${keys.length} entries)`);
+    this.logger.info(`[CacheManager] Кэш очищен (${keys.length} записей)`);
 
     return keys.length;
   }
@@ -219,7 +219,7 @@ class CacheManager {
       await this.redis.del(fullKey);
     }
 
-    this.logger.info(`[CacheManager] Cleared cache for model: ${model} (${keys.length} entries)`);
+    this.logger.info(`[CacheManager] Очищен кэш для модели: ${model} (${keys.length} записей)`);
 
     return keys.length;
   }
@@ -276,7 +276,7 @@ class CacheManager {
       warmed++;
     }
 
-    this.logger.info(`[CacheManager] Cache warmed up with ${warmed} entries`);
+    this.logger.info(`[CacheManager] Кэш прогрет ${warmed} записями`);
 
     return warmed;
   }
@@ -292,7 +292,7 @@ class CacheManager {
       deletes: 0
     };
 
-    this.logger.info('[CacheManager] Statistics reset');
+    this.logger.info('[CacheManager] Статистика сброшена');
   }
 }
 
