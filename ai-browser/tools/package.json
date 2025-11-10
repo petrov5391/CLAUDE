@@ -1,0 +1,31 @@
+{
+  "name": "@ai-browser/tools",
+  "version": "0.5.0",
+  "description": "Specialized tools for AI Browser: image generation, document generation, workflow automation",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/test-tools.js"
+  },
+  "keywords": [
+    "ai",
+    "image-generation",
+    "document-generation",
+    "workflow",
+    "n8n",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "uuid": "^9.0.0"
+  },
+  "optionalDependencies": {
+    "pdfkit": "^0.14.0",
+    "docx": "^8.5.0",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "winston": "^3.11.0"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "name": "Hourly Health Check",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        }
+      },
+      "name": "trigger.cron0"
+    },
+    {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\n      // Health check logic\n      const services = ['api', 'database', 'cache'];\n      const results = services.map(service => ({\n        service,\n        status: 'healthy',\n        timestamp: new Date().toISOString()\n      }));\n      return [{ json: { services: results } }];\n    "
+      },
+      "name": "utility.code1"
+    }
+  ],
+  "connections": {
+    "trigger.cron0": {
+      "main": [
+        [
+          {
+            "node": "utility.code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "tags": [
+    "scheduled",
+    "automation",
+    "cron"
+  ]
+}

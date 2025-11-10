@@ -1,0 +1,85 @@
+{
+  "name": "Log Data Processor",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "process-logs",
+        "responseMode": "onReceived",
+        "httpMethod": "POST"
+      },
+      "name": "trigger.webhook0"
+    },
+    {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\n      // Process log entries\n      const processed = items.map(item => {\n        const log = item.json;\n        return {\n          timestamp: new Date(log.timestamp).toISOString(),\n          level: log.level.toUpperCase(),\n          message: log.message,\n          severity: log.level === 'error' ? 'high' : 'low'\n        };\n      });\n      return processed;\n    "
+      },
+      "name": "utility.code1"
+    },
+    {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/logs",
+        "responseFormat": "json",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "data",
+              "value": "={{ $json }}"
+            }
+          ]
+        }
+      },
+      "name": "output.http2"
+    }
+  ],
+  "connections": {
+    "trigger.webhook0": {
+      "main": [
+        [
+          {
+            "node": "utility.code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "utility.code1": {
+      "main": [
+        [
+          {
+            "node": "output.http2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "tags": [
+    "data",
+    "processing",
+    "automation"
+  ]
+}

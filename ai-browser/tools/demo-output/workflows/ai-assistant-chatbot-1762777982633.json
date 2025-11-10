@@ -1,0 +1,84 @@
+{
+  "name": "AI Assistant Chatbot",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "chat",
+        "responseMode": "onReceived",
+        "httpMethod": "POST"
+      },
+      "name": "trigger.webhook0"
+    },
+    {
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "operation": "create",
+        "model": "gpt-4",
+        "prompt": "={{ $json.message }}",
+        "temperature": 0.7
+      },
+      "name": "ai.openai1",
+      "credentials": {
+        "openAiApi": {
+          "id": "1",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\n              return {\n                response: items[0].json.choices[0].message.content,\n                timestamp: new Date().toISOString()\n              };\n            "
+      },
+      "name": "utility.code2"
+    }
+  ],
+  "connections": {
+    "trigger.webhook0": {
+      "main": [
+        [
+          {
+            "node": "ai.openai1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ai.openai1": {
+      "main": [
+        [
+          {
+            "node": "utility.code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "tags": [
+    "ai",
+    "chat",
+    "assistant"
+  ]
+}

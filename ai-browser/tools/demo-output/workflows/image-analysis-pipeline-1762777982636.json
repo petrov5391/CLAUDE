@@ -1,0 +1,103 @@
+{
+  "name": "Image Analysis Pipeline",
+  "nodes": [
+    {
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "analyze-image",
+        "responseMode": "onReceived",
+        "httpMethod": "POST"
+      },
+      "name": "trigger.webhook0"
+    },
+    {
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "\n            // Extract image URL from request\n            return [{\n              json: {\n                imageUrl: $json.url,\n                requestedAt: new Date().toISOString()\n              }\n            }];\n          "
+      },
+      "name": "utility.code1"
+    },
+    {
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "operation": "analyze",
+        "model": "gpt-4-vision",
+        "prompt": "Describe this image in detail",
+        "temperature": 0.7
+      },
+      "name": "ai.openai2"
+    },
+    {
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/results",
+        "responseFormat": "json"
+      },
+      "name": "output.http3"
+    }
+  ],
+  "connections": {
+    "trigger.webhook0": {
+      "main": [
+        [
+          {
+            "node": "utility.code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "utility.code1": {
+      "main": [
+        [
+          {
+            "node": "ai.openai2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ai.openai2": {
+      "main": [
+        [
+          {
+            "node": "output.http3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "tags": [
+    "ai",
+    "vision",
+    "image-analysis"
+  ]
+}

@@ -68,12 +68,27 @@
   - События для мониторинга
   - Экспорт/импорт состояния
 
+### ✅ Tools Module (v0.5.0)
+
+- **🎨 Image Generator** - генерация изображений
+  - DALL-E через OpenAI API
+  - Stable Diffusion через локальный сервер
+  - Пакетная генерация и вариации
+- **📄 Document Generator** - создание документов
+  - PDF (через pdfkit)
+  - DOCX (через docx)
+  - Markdown и HTML
+  - Структурированный контент с заголовками, списками, кодом
+- **⚙️ Workflow Generator** - генерация n8n workflows
+  - Готовые шаблоны (AI Chat, Data Processing, Scheduled)
+  - Кастомные workflows
+  - Загрузка в n8n через API
+
 ### 🚧 В разработке
 
-- **🎨 Генерация изображений** (DALL-E, Midjourney, Stable Diffusion)
-- **📄 Генерация документов** (PDF, DOCX, PPTX)
-- **🔗 n8n workflow генератор**
 - **📡 Redis интеграция** для управления сессиями
+- **🔍 UI для настроек** и управления API ключами
+- **🧪 Интеграционные тесты** (Jest + Playwright)
 
 ## 🏗️ Архитектура
 
@@ -116,10 +131,18 @@ ai-browser/
 │   │   ├── task-distributor.js    # Автораспределение
 │   │   └── index.js
 │   └── package.json
+├── tools/                # ✅ Специализированные инструменты
+│   ├── src/
+│   │   ├── image-generator.js     # Генерация изображений
+│   │   ├── document-generator.js  # Генерация документов
+│   │   ├── workflow-generator.js  # Генерация n8n workflows
+│   │   └── index.js
+│   └── package.json
 ├── examples/             # Примеры использования
 │   ├── browser-control-integration.js
 │   ├── coordination-demo.js
-│   └── task-queue-demo.js
+│   ├── task-queue-demo.js
+│   └── tools-demo.js
 ├── backend-api/          # Backend координации (TODO)
 ├── n8n-workflows/        # Готовые workflow (TODO)
 └── logs/                 # Логи приложения
@@ -439,17 +462,72 @@ console.log('Завершено:', stats.completed);
 
 Подробная документация: `task-queue/README.md`
 
+## 🛠️ Tools - Специализированные инструменты
+
+### Быстрый старт
+
+```bash
+# Установка зависимостей
+cd tools
+npm install
+
+# Опционально для PDF и DOCX
+npm install pdfkit docx
+
+# Запуск тестов
+npm test
+
+# Запуск примера
+cd ../examples
+NODE_PATH=../tools/node_modules node tools-demo.js
+```
+
+### Использование
+
+```javascript
+const { createToolsSystem } = require('./tools/src');
+
+// Создать все инструменты
+const { imageGenerator, documentGenerator, workflowGenerator } = createToolsSystem(logger, {
+  openaiApiKey: process.env.OPENAI_API_KEY,
+  n8nApiKey: process.env.N8N_API_KEY
+});
+
+// Генерация изображения
+const image = await imageGenerator.generate(
+  'A futuristic AI-powered browser',
+  { provider: 'dalle', size: '1024x1024' }
+);
+
+// Генерация документа
+const doc = await documentGenerator.generate([
+  { type: 'heading', level: 1, text: 'Report' },
+  { type: 'text', text: 'Content here...' }
+], {
+  format: 'pdf',
+  title: 'My Report'
+});
+
+// Генерация workflow
+const workflow = await workflowGenerator.createAIChatWorkflow({
+  name: 'AI Assistant',
+  model: 'gpt-4'
+});
+```
+
+Подробная документация: `tools/README.md`
+
 ## 📝 TODO
 
 - [x] Интеграция Playwright для web-based моделей ✅
 - [x] Провайдеры для ChatGPT, Claude, DeepSeek ✅
 - [x] Система межмодельной коммуникации (Coordination Module) ✅
 - [x] Очередь задач с приоритизацией (Task Queue Module) ✅
-- [ ] UI для настроек и управления API ключами
-- [ ] Генератор изображений
-- [ ] Генератор документов
-- [ ] n8n workflow интеграция
+- [x] Генератор изображений (DALL-E, Stable Diffusion) ✅
+- [x] Генератор документов (PDF, DOCX, MD, HTML) ✅
+- [x] n8n workflow генератор ✅
 - [ ] Redis для управления сессиями
+- [ ] UI для настроек и управления API ключами
 - [ ] Интеграционные тесты (Jest + Playwright)
 
 ## 📄 Лицензия
@@ -462,12 +540,13 @@ MIT License
 
 ---
 
-**Версия**: 0.4.0
+**Версия**: 0.5.0
 **Дата**: 2025-11-10
 **Статус**: В активной разработке
 
 ### История версий
 
+- **v0.5.0** (2025-11-10) - Tools Module: генерация изображений, документов и n8n workflows
 - **v0.4.0** (2025-11-10) - Task Queue Module: приоритетная очередь, зависимости, автораспределение
 - **v0.3.0** (2025-11-10) - Coordination Module: MessageBus, Coordinator, SharedState
 - **v0.2.0** (2025-11-10) - Browser Control Module: Playwright интеграция, провайдеры для web-моделей
