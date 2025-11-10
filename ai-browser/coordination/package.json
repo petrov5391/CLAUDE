@@ -6,12 +6,17 @@
   "scripts": {
     "test": "node test/test-coordination.js"
   },
-  "keywords": ["coordination", "message-bus", "ai", "communication"],
+  "keywords": [
+    "coordination",
+    "message-bus",
+    "ai",
+    "communication"
+  ],
   "author": "AI Browser Team",
   "license": "MIT",
   "dependencies": {
     "eventemitter3": "^5.0.1",
-    "winston": "^3.11.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.18.3"
   }
 }
